@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculation Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body class="bg-gray-100 p-4">
+    <div id="form" class="space-y-4 max-w-md mx-auto p-4 bg-white shadow-lg rounded-lg">
+        <!-- Unit and Currency Fields -->
+        <div class="flex space-x-4">
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700">Unit</label>
+                <input type="text" id="unit" class="mt-1 block w-full p-2 border border-gray-300 rounded"
+                    placeholder="e.g., gr">
+            </div>
+            <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700">Currency</label>
+                <input type="text" id="currency" class="mt-1 block w-full p-2 border border-gray-300 rounded"
+                    placeholder="e.g., USD">
+            </div>
+        </div>
+
+        <!-- Initial Size and Price Fields -->
+        <div id="rows">
+            <div class="flex space-x-4">
+                <div class="flex-2">
+                    <label class="block text-sm font-medium text-gray-700">Size</label>
+                    <div class="relative">
+                        <span class="absolute right-2 top-2 unit-label text-gray-500"></span>
+                        <input type="number" maxlength="4"
+                            class="size-input mt-1 block w-full p-2 border border-gray-300 rounded pr-8">
+                    </div>
+                </div>
+                <div class="flex-2">
+                    <label class="block text-sm font-medium text-gray-700">Price</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-2 currency-label text-gray-500"></span>
+                        <input type="number"
+                            class="price-input mt-1 block w-full p-2 border border-gray-300 rounded pl-12">
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
+                    <div class="relative">
+                        <button class="delete-row bg-red-300 text-white py-2 px-4 rounded mt-1 cursor-not-allowed" disabled>
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Button Row -->
+        <div class="flex space-x-4">
+            <button id="add-row" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Add</button>
+        </div>
+        <div class="flex space-x-4">
+            <button id="reset" class="flex-none bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded">Reset</button>
+            <button id="calculate" class="flex-grow bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">Calculate</button>
+        </div>
+    </div>
+
+    <!-- Result Container -->
+    <div id="result" class="max-w-md mx-auto mt-4 p-4 bg-white shadow-lg rounded-lg hidden">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg text-gray-700">Result</h3>
+            <button id="close-result" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div id="result-data"></div>
+    </div>
+
+    <div class="hidden" id="row-to-clone">
+        <div class="flex space-x-4 row-item mt-1">
+            <div class="flex-2">
+                <div class="relative">
+                    <span class="absolute right-2 top-2 unit-label text-gray-500"></span>
+                    <input type="number" maxlength="4"
+                    class="size-input mt-1 block w-full p-2 border border-gray-300 rounded pr-8">
+        </div>
+            </div>
+            <div class="flex-2">
+                <div class="relative">
+                    <span class="absolute left-2 top-2 currency-label text-gray-500"></span>
+                    <input type="number"
+                    class="price-input mt-1 block w-full p-2 border border-gray-300 rounded pl-12">
+        </div>
+            </div>
+            <div class="flex-1">
+                <div class="relative">
+                    <button class="delete-row bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded mt-1">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            // Sync unit and currency to inputs
+            $('#unit').on('blur', function () {
+                let unitValue = $(this).val();
+                $('.unit-label').text(unitValue);
+            });
+            $('#currency').on('blur', function () {
+                let currencyValue = $(this).val();
+                $('.currency-label').text(currencyValue);
+            });
+
+            // Add new row
+            $('#add-row').on('click', function () {
+                let rowToClone = $('#row-to-clone').html();
+                $('#rows').append(rowToClone);
+            });
+
+            // Delete row
+            $(document).on('click', '.delete-row', function () {
+                $(this).closest('.row-item').remove();
+            });
+
+            // Going back
+            $(document).on('click', '.delete-row', function () {
+                $(this).closest('.row-item').remove();
+            });
+
+            // Calculate prices
+            $('#calculate').on('click', function () {
+                let results = [];
+                $('.size-input').each(function (index) {
+                    let size = parseFloat($(this).val());
+                    let price = parseFloat($('.price-input').eq(index).val());
+                    if (size > 0 && price > 0) {
+                        let unitPrice = (price / size).toFixed(2);
+                        results.push({ index: index + 1, unitPrice: parseFloat(unitPrice) });
+                    }
+                });
+                results.sort((a, b) => a.unitPrice - b.unitPrice);
+
+                let resultHtml = '';
+                results.forEach(r => {
+                    resultHtml += `<p>Row ${r.index}: ${$('#currency').val()} ${r.unitPrice} per ${$('#unit').val()}</p>`;
+                });
+
+                $('#result-data').html(resultHtml);
+                $('#result').slideDown(100);
+                $('#form').slideUp(100);
+            });
+
+            $('#close-result').on('click', function () {
+                $('#result').slideUp(100);
+                $('#form').slideDown(100);
+            });
+
+        });
+
+    </script>
+</body>
+
+</html>
