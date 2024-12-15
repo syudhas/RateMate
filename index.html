@@ -4,25 +4,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculation Page</title>
+    <title>RateMate App</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#007bff">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body class="bg-gray-100 p-4">
+    <header class="text-4xl font-bold text-center py-4">
+        RateMate [<span class="text-gray-500">alpha</span>]
+    </header>
     <div id="form" class="space-y-4 max-w-md mx-auto p-4 bg-white shadow-lg rounded-lg">
         <!-- Unit and Currency Fields -->
         <div class="flex space-x-4">
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700">Unit</label>
                 <input type="text" id="unit" class="mt-1 block w-full p-2 border border-gray-300 rounded"
-                    placeholder="e.g., gr">
+                    placeholder="ml">
             </div>
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700">Currency</label>
                 <input type="text" id="currency" class="mt-1 block w-full p-2 border border-gray-300 rounded"
-                    placeholder="e.g., USD">
+                    placeholder="USD">
             </div>
         </div>
 
@@ -40,7 +45,7 @@
                 <div class="flex-2">
                     <label class="block text-sm font-medium text-gray-700">Price</label>
                     <div class="relative">
-                        <span class="absolute left-3 top-2 currency-label text-gray-500"></span>
+                        <span class="absolute left-2 top-2 currency-label text-gray-500"></span>
                         <input type="number"
                             class="price-input mt-1 block w-full p-2 border border-gray-300 rounded pl-12">
                     </div>
@@ -48,7 +53,8 @@
                 <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700">&nbsp;</label>
                     <div class="relative">
-                        <button class="delete-row bg-red-300 text-white py-2 px-4 rounded mt-1 cursor-not-allowed" disabled>
+                        <button class="delete-row bg-red-300 text-white py-2 px-4 rounded mt-1 cursor-not-allowed"
+                            disabled>
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -82,16 +88,14 @@
             <div class="flex-2">
                 <div class="relative">
                     <span class="absolute right-2 top-2 unit-label text-gray-500"></span>
-                    <input type="number" maxlength="4"
-                    class="size-input mt-1 block w-full p-2 border border-gray-300 rounded pr-8">
-        </div>
+                    <input type="number" maxlength="4" class="size-input mt-1 block w-full p-2 border border-gray-300 rounded pr-8">
+                </div>
             </div>
             <div class="flex-2">
                 <div class="relative">
                     <span class="absolute left-2 top-2 currency-label text-gray-500"></span>
-                    <input type="number"
-                    class="price-input mt-1 block w-full p-2 border border-gray-300 rounded pl-12">
-        </div>
+                    <input type="number" class="price-input mt-1 block w-full p-2 border border-gray-300 rounded pl-12">
+                </div>
             </div>
             <div class="flex-1">
                 <div class="relative">
@@ -104,13 +108,19 @@
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js').then(() => {
+                console.log("Service Worker Registered");
+            });
+        }
+
         $(document).ready(function () {
             // Sync unit and currency to inputs
-            $('#unit').on('blur', function () {
+            $('#unit').on('keyup', function () {
                 let unitValue = $(this).val();
                 $('.unit-label').text(unitValue);
             });
-            $('#currency').on('blur', function () {
+            $('#currency').on('keyup', function () {
                 let currencyValue = $(this).val();
                 $('.currency-label').text(currencyValue);
             });
